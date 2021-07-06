@@ -1,9 +1,10 @@
-import React from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components';
+import { useAuth } from '../context/authProvider';
 import { useNotes } from '../context/notesContext';
 import { useForm } from '../hooks/useForm';
 import { Item } from './itemNote';
-
+import UpdateTask from '../components/updateTask'
 
 const ListContainer = styled.div`
     width: 90%;
@@ -12,9 +13,21 @@ const ListContainer = styled.div`
     row-gap: 20px;
 `
 
+
 const TodoList = () => {
-    const { handlerChangeText, formulario } = useForm({ id: " ",titulo: "" });
-    const { addNote, deleteNote, notes, updateNotes } = useNotes();
+    const { id } = useAuth();
+    const { handlerChangeText, formulario } = useForm({ id: id ? id : '', titulo: '', updated: '' });
+    const { addNote, deleteNote, notes, modal, setModal } = useNotes();
+
+    const [dataUpdate, setDataUpdate ] = useState({
+        id: '',
+        note: ''
+    });
+
+    const handlerEditar =(id, note)=>{
+        setDataUpdate({id: id, note: note});
+        setModal(true);
+    }
 
     return (
         <ListContainer>
@@ -24,25 +37,24 @@ const TodoList = () => {
                 onChange={handlerChangeText}
                 value={formulario.titulo}
                 name="titulo"
-                handleAdd={()=>{addNote(formulario.titulo)}}
-               
+                handleAdd={() => { addNote(formulario.titulo) }}
             />
 
             {
                 notes.map((note, key) => {
-                    return(
+                    return (
                         <Item
                             key={key}
                             value={note.titulo}
+                            handleDelete={() => { deleteNote(note.id) }}
+                            handlerUpdate={() => {handlerEditar(note.id, note.titulo) }}
                             readOnly
-                            handleDelete={()=>{deleteNote(note.id)}}
-                            
                         />
                     )
                 })
             }
 
-
+            {modal && (<UpdateTask id={dataUpdate.id} note={dataUpdate.note}/>)}
 
         </ListContainer>
     )

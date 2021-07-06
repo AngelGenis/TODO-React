@@ -16,6 +16,31 @@ const ButtonContainer = styled.div`
     }
 `
 
+const AddButtonContainer = styled.div`
+    width: 50px;
+    height: 40px;
+    border: none;
+    background: linear-gradient(119.36deg, #396AFC 15.78%, #8F94FB 97.17%);
+    border-radius: 5px;
+    color: white;
+    font-weight: bolder;
+    font-size: 1.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+
+    p{
+        text-align: center;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    img{
+        width: 25px;
+    }
+`
+
 export const ButtonWithRender = ({ render }) => {
     const login = () => {
         console.log("funcion login compartida");
@@ -44,6 +69,14 @@ export const Button = ({ onClick, texto}) => {
         <ButtonContainer onClick={onClick}>
             <p>{texto}</p>
         </ButtonContainer>
+    )
+}
+
+export const AddButton = ({ onClick, texto, children}) => {
+    return (
+        <AddButtonContainer onClick={onClick}>
+            {children}
+        </AddButtonContainer>
     )
 }
 

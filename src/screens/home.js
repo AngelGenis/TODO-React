@@ -11,6 +11,7 @@ const ContainerTodo = styled.div`
     flex-direction: column;
     align-items: center;
     margin-top: 30px;
+        
 
     p{
         width: 90%;
@@ -29,7 +30,6 @@ const TODO = () => {
         </ContainerTodo>
     )
 }
-
 
 const Home = () => {
     return (

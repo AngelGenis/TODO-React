@@ -1,6 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
-import trash from '../images/trash.png'
+import trash from '../images/trash.png';
+import pencil from '../images/pencil.png';
+import {AddButton} from '../components/button'
 
 const ItemContainer = styled.div`
     width: 100%;
@@ -23,7 +25,7 @@ const ItemContainer = styled.div`
         padding: 0 10px;
     }
 `
-const AddButton = styled.button`
+const AddButtonn = styled.button`
     width: 15%;
     height: 80%;
     border: none;
@@ -36,8 +38,18 @@ const AddButton = styled.button`
     align-items: center;
     justify-content: center;
 `
-const DeleteButton = styled(AddButton)`
+const DeleteButton = styled(AddButtonn)`
     background: linear-gradient(119.36deg, #EC4866 15.78%, #FE8298 97.17%);
+`
+const UpdateButton = styled(AddButtonn)`
+    background: none;
+    width: 50px;
+    height: 50px;
+    position: relative;
+    
+    img{
+        width: 25px;
+    }
 `
 
 export const Item = (props) => {
@@ -50,13 +62,20 @@ export const Item = (props) => {
                 onChange={props.onChange}
                 name={props.name}
                 readOnly={props.readOnly}
+                autoComplete="off"
             />
             {
                 props.add ? (
                     <AddButton onClick={props.handleAdd} > + </AddButton>) :
-                    <DeleteButton onClick={props.handleDelete}>
-                        <img src={trash} alt="trash" />
-                    </DeleteButton>
+                    <>
+                        <UpdateButton onClick={props.handlerUpdate}>
+                            <img src={pencil} alt="trash" />
+                        </UpdateButton>
+
+                        <DeleteButton onClick={props.handleDelete}>
+                            <img src={trash} alt="trash" />
+                        </DeleteButton>
+                    </>
             }
         </ItemContainer>
     )

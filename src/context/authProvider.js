@@ -5,7 +5,8 @@ import axios from 'axios';
 
 const authContextDefaultValues = {
     isAuth: false,
-    name: ""
+    name: '',
+    id: ''
 }
 
 const AuthContext = createContext(authContextDefaultValues);
@@ -15,21 +16,28 @@ export const useAuth = () => useContext(AuthContext);
 export function AuthProvider({ children }) {
     const [state, setState] = useState(authContextDefaultValues);
     let history = useHistory();
-    const { isAuth, name } = state;
+    const { isAuth, name, id } = state;
     const [users, setUsers] = useState([]);
     const [error, setError] = useState("");
 
-    console.log(users);
     const readCookie = () => {
         var cookie = Cookies.get("user");
-       cookie ? setState({ ...state, isAuth: true, name: cookie }) : setState({ ...state, isAuth: false, name: "" });
+        cookie ? (
+            axios.get(`http://localhost:8000/users/${cookie}`)
+                .then(res => {
+                    const user = res.data;
+                    setState({ ...state, isAuth: true, name: user.name, id: user.id })
+                })
+        ) : (
+            setState({ ...state, isAuth: false, name: "", id: "" })
+        )
     }
 
     const login = async (username, password) => {
         users.forEach((user) => {
             if (user.username === username && user.password === password) {
-                setState({ isAuth: true, name: user.name });
-                Cookies.set("user", user.name);
+                setState({ isAuth: true, name: user.name, id: user.id });
+                Cookies.set("user", user.id);
                 const inter = setInterval(() => {
                     setTimeout(() => {
                         history.push("/");
@@ -38,33 +46,34 @@ export function AuthProvider({ children }) {
                     history.push("/bienvenida");
                     clearInterval(inter)
                 }, 100);
-               
+
             } else {
-                setError("Nombre de usuario o contraseña incorrecta");    
+                setError("Nombre de usuario o contraseña incorrecta");
             }
         });
     }
 
     const logout = () => {
-        setState({ isAuth: false, username: "" });
+        setState({ isAuth: false, username: '', id: '' });
         Cookies.remove("user");
     };
 
     const getUsers = () => {
-        axios.get(`https://60df2d57abbdd9001722d2b9.mockapi.io/api/users`)
+        const headers = {
+            'Content-Type': {'Content-Type': 'application/json'},
+            headers: {"Access-Control-Allow-Origin": "*"}
+        };
+        axios.get(`http://localhost:8000/users`, {headers})
             .then(res => {
                 const AllUsers = res.data;
                 setUsers([...AllUsers]);
             })
     }
 
-    const value = { isAuth, name, login, logout, error};
+    const value = { isAuth, name, login, logout, error, id };
 
     useEffect(() => {
         readCookie();
-    }, []);
-
-    useEffect(() => {
         getUsers();
     }, []);
 

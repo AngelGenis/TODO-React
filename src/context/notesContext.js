@@ -1,5 +1,6 @@
 import { createContext, useState, useContext, useEffect } from 'react'
 import axios from 'axios';
+import { useAuth } from './authProvider';
 
 const NotesContextDefaultValues = {
     notes: []
@@ -14,9 +15,11 @@ export const useNotes = () => useContext(NotesContext);
 export function NotesProvider({ children }) {
     const [state, setState] = useState(NotesContextDefaultValues)
     const { notes } = state;
+    const {id} = useAuth();
+    const [modal, setModal] = useState(false);
 
     const addNote = (titulo) => {
-        axios.post(`https://60df2d57abbdd9001722d2b9.mockapi.io/api/users/1/notes`, { titulo })
+        axios.post(`http://localhost:8000/users/${id}/notes`, { titulo })
             .then(res => {
                 setState({
                     notes: [{ titulo: titulo, id: res.data.id }, ...notes]
@@ -24,8 +27,8 @@ export function NotesProvider({ children }) {
             });
     }
 
-    const deleteNote = (noteId) => {
-        axios.delete(`https://60df2d57abbdd9001722d2b9.mockapi.io/api/users/1/notes/${noteId}`)
+    const deleteNote = async (noteId) => {
+        await axios.delete(`http://localhost:8000/notes/${noteId}`)
             .then(() => {
 
                 setState({
@@ -34,37 +37,35 @@ export function NotesProvider({ children }) {
             })      
     }
 
-    const getNotes = (userId="1") => {
-        axios.get(`https://60df2d57abbdd9001722d2b9.mockapi.io/api/users/${userId}/notes`)
-            .then(res => {
-                const notes = res.data;
-                setState({
-                    notes: [...notes]
+    const getNotes = () => {
+        if(id){
+            axios.get(`http://localhost:8000/users/${id}/notes`)
+                .then(res => {
+                    const notes = res.data;
+                    setState({
+                        notes: [...notes]
+                    })
                 })
-            })
+        }
     }
 
-    const updateNotes = ({idNote, nota}) => {
-        axios.put(`https://60df2d57abbdd9001722d2b9.mockapi.io/api/users/1/notes/${idNote}`, nota)
-            .then(response => {
-                console.log(response.data);
-                
-                setState({
-                    notes: [notes.filter((note)=> note.id !== idNote)]
-                })
-            });
+    const updateNotes = async (idNote, nota) => {
+        await axios.put(`http://localhost:8000/notes/${idNote}`, {titulo: nota, userId: id});
+        getNotes(id);
     }
 
     useEffect(() => {
-        getNotes();
-    }, []);
+        getNotes(id);
+    },[id]);
 
     const value = {
         notes,
         addNote,
         deleteNote,
         getNotes,
-        updateNotes
+        updateNotes,
+        modal, 
+        setModal
     };
 
     return (
