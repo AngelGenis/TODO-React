@@ -1,8 +1,8 @@
-import { createContext, useState, useContext, useEffect } from 'react'
+import { createContext, useState, useContext, useEffect, useCallback } from 'react'
 import Cookies from 'js-cookie';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
-
+import React from 'react';
 const authContextDefaultValues = {
     isAuth: false,
     name: '',
@@ -13,44 +13,52 @@ const AuthContext = createContext(authContextDefaultValues);
 
 export const useAuth = () => useContext(AuthContext);
 
-export function AuthProvider({ children }) {
+function AuthProvider({ children }) {
     const [state, setState] = useState(authContextDefaultValues);
     let history = useHistory();
     const { isAuth, name, id } = state;
     const [users, setUsers] = useState([]);
     const [error, setError] = useState("");
 
-    const readCookie = () => {
+    console.log("3");
+    const readCookie = useCallback(() => {
+        console.log("2");
         var cookie = Cookies.get("user");
-        cookie ? (
-            axios.get(`http://localhost:8000/users/${cookie}`)
+        cookie && (
+             axios.get(`http://localhost:8000/users/${cookie}`)
                 .then(res => {
                     const user = res.data;
-                    setState({ ...state, isAuth: true, name: user.name, id: user.id })
+                    setState({isAuth: true, name: user.name, id: user.id })
                 })
-        ) : (
-            setState({ ...state, isAuth: false, name: "", id: "" })
         )
-    }
+    }, [isAuth])
+    useEffect(() => {
+        console.log("1");
+        readCookie();
+        getUsers();
+    }, []);
 
     const login = async (username, password) => {
+       
+        let band = false;
         users.forEach((user) => {
             if (user.username === username && user.password === password) {
+                band = true;
                 setState({ isAuth: true, name: user.name, id: user.id });
+                console.log("Este es el id" + user.id);
                 Cookies.set("user", user.id);
                 const inter = setInterval(() => {
                     setTimeout(() => {
-                        history.push("/");
+                        history.push("/home");
                     }, 3000);
 
                     history.push("/bienvenida");
                     clearInterval(inter)
                 }, 100);
-
-            } else {
-                setError("Nombre de usuario o contraseña incorrecta");
             }
         });
+
+        !band && (setError("Nombre de usuario o contraseña incorrecta"));
     }
 
     const logout = () => {
@@ -58,24 +66,21 @@ export function AuthProvider({ children }) {
         Cookies.remove("user");
     };
 
-    const getUsers = () => {
+    const getUsers = useCallback(() => {
         const headers = {
-            'Content-Type': {'Content-Type': 'application/json'},
-            headers: {"Access-Control-Allow-Origin": "*"}
+            'Content-Type': { 'Content-Type': 'application/json' },
+            headers: { "Access-Control-Allow-Origin": "*" }
         };
-        axios.get(`http://localhost:8000/users`, {headers})
+        axios.get(`http://localhost:8000/users`, { headers })
             .then(res => {
                 const AllUsers = res.data;
                 setUsers([...AllUsers]);
             })
-    }
+    },[users])
 
-    const value = { isAuth, name, login, logout, error, id };
+    const value = { isAuth, name, login, logout, error, id, readCookie };
 
-    useEffect(() => {
-        readCookie();
-        getUsers();
-    }, []);
+    
 
     return (
         <>
@@ -86,3 +91,4 @@ export function AuthProvider({ children }) {
     );
 }
 
+export default AuthProvider;

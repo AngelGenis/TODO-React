@@ -30,6 +30,12 @@ const AddButtonContainer = styled.div`
     justify-content: center;
     position: relative;
 
+    @media screen and (min-width: 767px){
+        width: 10%;
+        cursor: pointer;
+        height: 100%;
+    }
+
     p{
         text-align: center;
         padding: 0 !important;

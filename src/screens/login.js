@@ -6,7 +6,6 @@ import userIcon from '../images/user.png';
 import lock from '../images/lock.png';
 import { useAuth } from '../context/authProvider';
 import Button from '../components/button';
-
 // import {ButtonWithRender} from '../components/button';
 
 const Container = styled.div`
@@ -15,6 +14,13 @@ const Container = styled.div`
     width: 100%;
     height: calc(100vh - 120px);
     padding-top: 100px;
+
+    @media screen and (min-width: 767px){
+        width: 30%;
+        left: 50%;
+        position: relative;
+        transform: translateX(-50%);
+    }
 
     .iniciar-sesion{
         font-weight: bolder;
@@ -69,6 +75,7 @@ const Container = styled.div`
         left: 50%;
         transform: translateX(-50%);
         margin-top: 120px;
+        cursor: pointer;
     }
 `
 
@@ -104,7 +111,7 @@ const Login = () => {
                     type="password"
                 />
             </div>
-
+            
             <p className="error">{error}</p>
 
             {/*ingresando a la función login con render props*/}

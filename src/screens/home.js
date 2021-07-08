@@ -1,5 +1,4 @@
 import React from 'react';
-import requireAuthentication from '../hooks/requireAuthentication'
 import Layout from '../components/layout';
 import styled from 'styled-components';
 import TodoList from '../components/todolist';
@@ -11,8 +10,11 @@ const ContainerTodo = styled.div`
     flex-direction: column;
     align-items: center;
     margin-top: 30px;
-        
 
+    @media screen and (min-width: 767px){
+        width: 50%;
+    }
+        
     p{
         width: 90%;
         padding: 20px 0;
@@ -32,11 +34,13 @@ const TODO = () => {
 }
 
 const Home = () => {
+  
     return (
         <Layout>
             <TODO />
+
         </Layout>
     )
 }
 
-export default requireAuthentication(Home);
+export default Home;

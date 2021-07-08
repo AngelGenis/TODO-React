@@ -5,13 +5,10 @@ import { useAuth } from './authProvider';
 const NotesContextDefaultValues = {
     notes: []
 }
-
 //Create context
 const NotesContext = createContext(NotesContextDefaultValues);
-
 //Custom hook 
 export const useNotes = () => useContext(NotesContext);
-
 export function NotesProvider({ children }) {
     const [state, setState] = useState(NotesContextDefaultValues)
     const { notes } = state;

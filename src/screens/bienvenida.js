@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useAuth } from '../context/authProvider';
-import requireAuthentication from '../hooks/requireAuthentication'
 
 const ContainerBienvenida = styled.div`
     background: linear-gradient(119.36deg, #396AFC 15.78%, #8F94FB 97.17%);
@@ -31,4 +30,4 @@ const Bienvenida = ()=>{
 }
 
 
-export default requireAuthentication(Bienvenida);
+export default Bienvenida;

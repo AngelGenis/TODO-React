@@ -29,6 +29,7 @@ const ContainerHeader = styled.div`
             font-size: .8rem;
             padding: 5px 0;
             color: gray;
+            cursor: pointer;
         }
     }
 
